@@ -1,4 +1,4 @@
-package com.sparta.msa_exam.product.product;
+package com.sparta.msa_exam.product.product.product;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
