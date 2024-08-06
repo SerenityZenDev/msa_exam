@@ -1,6 +1,11 @@
 spring:
   application:
     name: order-service
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
 server:
   port: 19092
 eureka:
