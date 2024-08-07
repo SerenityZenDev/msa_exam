@@ -1,4 +1,4 @@
-package com.sparta.msa_exam.order.order.order;
+package com.sparta.msa_exam.order.order.product;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

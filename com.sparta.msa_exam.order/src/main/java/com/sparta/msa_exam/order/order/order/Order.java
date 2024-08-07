@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,9 @@ import lombok.Setter;
 
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Table(name = "orders")
 @Entity
 public class Order {
     @Id
@@ -25,12 +29,8 @@ public class Order {
 
     @Setter
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderProductMapping> productsIds;
+    private List<OrderProduct> productsIds;
 
-    @Builder
-    public Order(String name, List<OrderProductMapping> productsIds) {
-        this.name = name;
-        this.productsIds = productsIds;
-    }
+
 
 }

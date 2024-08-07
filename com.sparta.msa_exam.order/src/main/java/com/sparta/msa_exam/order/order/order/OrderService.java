@@ -1,7 +1,7 @@
 package com.sparta.msa_exam.order.order.order;
 
-import java.util.List;
-import java.util.Optional;
+import com.sparta.msa_exam.order.order.product.ProductClient;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,50 +9,55 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+
     private final OrderRepository orderRepository;
-    private final OrderProductMappingRepository orderProductMappingRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ProductClient productClient;
 
 
-    @Transactional
-    public Order createOrder(String name, List<Long> productIds) {
-        Order order = Order.builder()
-            .name(name)
-            .build();
-
-        List<OrderProductMapping> orderProductMappings = productIds.stream()
-            .map(productId -> OrderProductMapping.builder()
-                .order(order)
-                .productId(productId)
-                .build())
-            .toList();
-
-        order.setProductsIds(orderProductMappings);
-
-        Order savedOrder = orderRepository.save(order);
-        orderProductMappingRepository.saveAll(orderProductMappings);
-
-        return savedOrder;
-    }
-
-    @Transactional
-    public Order addProductToOrder(Long orderId, Long productId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            OrderProductMapping orderProductMapping = OrderProductMapping.builder()
-                .order(order)
-                .productId(productId)
-                .build();
-            order.getProductsIds().add(orderProductMapping);
-            orderProductMappingRepository.save(orderProductMapping);
-            return orderRepository.save(order);
-        } else {
-            throw new RuntimeException("Order not found");
-        }
-    }
-
-    public Order getOrder(Long orderId) {
+    public OrderDto getOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
+            .map(this::toDTO)
+            .orElse(null);
     }
+
+    @Transactional
+    public Order addOrder(Order order) {
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public OrderDto updateOrder(Long orderId, Long productId) {
+        return orderRepository.findById(orderId).map(order -> {
+            if (productExists(productId)) {
+                OrderProduct orderProduct = OrderProduct.builder()
+                    .productId(productId)
+                    .order(order)
+                    .build();
+                orderProductRepository.save(orderProduct);
+                order.getProductsIds().add(orderProduct);
+                return toDTO(orderRepository.save(order));
+            }
+            return toDTO(order);
+        }).orElse(null);
+    }
+
+
+    private boolean productExists(Long productId) {
+        return productClient.getAllProducts().stream()
+            .anyMatch(product -> product.getProduct_id().equals(productId));
+    }
+
+    private OrderDto toDTO(Order order) {
+        return OrderDto.builder()
+            .orderId(order.getOrderId())
+            .name(order.getName())
+            .productIds(order.getProductsIds().stream()
+                .map(OrderProduct::getProductId)
+                .collect(Collectors.toList()))
+            .build();
+    }
+
+
+
 }
