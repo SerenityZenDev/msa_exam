@@ -1,5 +1,6 @@
 package com.sparta.msa_exam.order.order.order;
 
+import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDto {
+public class OrderDto implements Serializable {
     private Long orderId;
     private String name;
     private List<Long> productIds;

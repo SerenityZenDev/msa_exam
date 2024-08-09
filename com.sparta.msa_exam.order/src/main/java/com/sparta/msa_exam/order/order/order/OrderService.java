@@ -3,6 +3,9 @@ package com.sparta.msa_exam.order.order.order;
 import com.sparta.msa_exam.order.order.product.ProductClient;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,18 +17,21 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final ProductClient productClient;
 
-
+     @Cacheable(cacheNames = "orderCache", key = "#orderId", unless = "#result == null")
     public OrderDto getOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
+        OrderDto orderDto = orderRepository.findById(orderId)
             .map(this::toDTO)
             .orElse(null);
+        return orderDto;
     }
 
+    // @CachePut(cacheNames = "orderCache", key = "#result.orderId")
     @Transactional
     public Order addOrder(Order order) {
         return orderRepository.save(order);
     }
 
+    @CachePut(cacheNames = "orderCache", key = "#result.orderId")
     @Transactional
     public OrderDto updateOrder(Long orderId, Long productId) {
         return orderRepository.findById(orderId).map(order -> {
@@ -57,7 +63,6 @@ public class OrderService {
                 .collect(Collectors.toList()))
             .build();
     }
-
 
 
 }
