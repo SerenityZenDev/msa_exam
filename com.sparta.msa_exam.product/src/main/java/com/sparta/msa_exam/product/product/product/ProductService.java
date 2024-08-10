@@ -12,13 +12,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Cacheable(cacheNames = "productAllCache", key = "methodName")
+    @Cacheable(cacheNames = "productAllCache", key = "'getAllProducts'")
     public List<Product> getAllProducts() {
         System.out.println("does not work cache");
         return productRepository.findAll();
     }
 
-    @CacheEvict(cacheNames = "productAllCache", key = "methodName")
+    @CacheEvict(cacheNames = "productAllCache", allEntries = true)
     public String addProduct(ProductRequestDto productRequestDto) {
         Product product = Product.builder()
             .name(productRequestDto.getName())
