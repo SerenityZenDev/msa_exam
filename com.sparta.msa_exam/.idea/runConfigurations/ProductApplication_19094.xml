@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ProductApplication 19094" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <module name="product.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.sparta.msa_exam.product.product.ProductApplication" />
+    <option name="VM_PARAMETERS" value="-Dserver.port=19094" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
